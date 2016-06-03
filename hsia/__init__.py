@@ -153,7 +153,7 @@ def main( fn, template, output_path=None ):
 	
 	# perform diff between the masks
 	diff_arr = nsidc_mask_arr - hsia_mask_arr
-	fill_mask = (diff_arr == 1).astype( np.int16 )
+	fill_mask = (diff_arr == 1).astype( np.uint8 )
 	# fill_mask = np.zeros_like( diff_arr )
 	# fill_mask[ diff_arr == 1 ] = diff_arr[ diff_arr == 1 ]
 
@@ -163,7 +163,7 @@ def main( fn, template, output_path=None ):
 	# 1 = inland lakes and inlets not covered by the NSIDC landmask, but present in the HSIA mask
 
 	# run fill with recursion
-	sic_arr = fill_mask_mismatch( sic_arr, fill_mask )
+	sic_arr = fill_mask_mismatch( sic_arr, np.copy( fill_mask ) )
 
 	# WRITE OUT FINAL GTIFF PREPPED FOR HSIA WITHOUT ERROR ICE REMOVED
 	meta = sic_conv.meta
@@ -190,12 +190,16 @@ def main( fn, template, output_path=None ):
 	# OPEN THE DATE JUST CREATED AND MAKE A NEW EMPTY BAND FROM ITS ARRAY SHAPE
 	final_sic = rasterio.open( sic_out_fn )
 	final_arr = final_sic.read( 1 )
-	source_arr = np.zeros_like( final_arr )
+	source_arr = np.empty_like( final_arr )
+
+	# # THIS IS A HACK!!!
+	# diff_arr = nsidc_mask_arr - hsia_mask_arr
+	# fill_mask = (diff_arr == 1).astype( np.uint8 )
 
 	# FILL IT IN WITH THE NEW VALUES
-	source_arr[ final_arr == 128 ] = landmask
 	source_arr[ hsia_mask_arr != 1 ] = NSIDC_0051 # set all pixels to the NSIDC 0051 data group and we will update from here
-	source_arr[ fill_mask ] = filled_recursive
+	source_arr[ final_arr == 128 ] = landmask
+	source_arr[ fill_mask == 1 ] = filled_recursive
 	source_arr[ final_arr == 255 ] = missing_data_inland
 
 	# dropped ice...  How to do this?
@@ -205,7 +209,7 @@ def main( fn, template, output_path=None ):
 
 	# WRITE OUT FINAL GTIFF PREPPED FOR HSIA WITH ERROR ICE REMOVED
 	meta = final_sic.meta
-	meta.update( compress='lzw', dtype='uint8', count=2, nodata=255 )
+	meta.update( compress='lzw', dtypes=['uint8', 'uint8'], dtype='uint8', count=2, nodata=255 )
 	output_filename = final_sic.name.replace( '.tif', '_dropice.tif' ) # FINAL NAME HERE
 	with rasterio.open( output_filename, 'w', **meta ) as out:
 		out.write( final_arr, 1 )
@@ -213,6 +217,12 @@ def main( fn, template, output_path=None ):
 
 	return output_filename
 
+
+	meta = final_sic.meta
+	meta.update( compress='lzw', dtype='uint8', nodata=255 )
+	output_filename = final_sic.name.replace( '.tif', '_FILLMASK.tif' ) # FINAL NAME HERE
+	with rasterio.open( output_filename, 'w', **meta ) as out:
+		out.write( fill_mask, 1 )
 
 # template_path = '/workspace/Shared/Tech_Projects/Sea_Ice_Atlas/project_data/hsia_updates/hsia_template/seaice_conc_sic_mean_pct_monthly_ak_1971_04.tif'
 # # for input_fn in glob.glob( os.path.join( input_path, '*.bin' ) ):
