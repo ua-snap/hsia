@@ -25,7 +25,8 @@ def get_padded_shape( full_rst, template, resolution, output_filename ):
 
 	'''	
 	template_out_fn = template.fn.replace( '.tif', '_epsg3413.tif' )
-	os.system( "gdalwarp -overwrite -s_srs EPSG:4326 -t_srs EPSG:3413 -of GTiff -r near -tr " + str( resolution ) + " " + str( resolution ) + " " + \
+	os.system( "gdalwarp -overwrite -s_srs EPSG:4326 -t_srs EPSG:3413 -of GTiff -r near -tr " + \
+				str( resolution ) + " " + str( resolution ) + " " + \
 				template.fn + ' ' + template_out_fn )
 
 	template_3413 = rasterio.open( template_out_fn )
@@ -173,8 +174,8 @@ def main( fn, template, output_path=None ):
 		out.write( sic_arr, 1 )
 
 	# drop erroneous sea ice:
-	month = output_filename.split('_')[1][4:] # HARDWIRED AND DANGEROUS STUFF HERE!
-	output_path = '/workspace/Shared/Tech_Projects/Sea_Ice_Atlas/project_data/update_2014/hsia_2014_update_gtiffs_dropice_v2'
+	month = os.path.basename(output_filename).split('_')[1][4:] # HARDWIRED AND DANGEROUS STUFF HERE! BROKEN !!!!
+	# output_path = '/workspace/Shared/Tech_Projects/Sea_Ice_Atlas/project_data/hsia_updates', year 
 	fn_list = glob.glob( '/workspace/Shared/Tech_Projects/Sea_Ice_Atlas/project_data/HSIA_SIC_Chapman/v1_0/monthly/gtiff/*'+month+'.tif' )
 	# this output SHOULD be the final good-to-go output TESTS NEEDED HERE!
 	sic_out_fn = drop_erroneous_ice( out.name, fn_list, output_path )
@@ -218,11 +219,30 @@ def main( fn, template, output_path=None ):
 	return output_filename
 
 
-	meta = final_sic.meta
-	meta.update( compress='lzw', dtype='uint8', nodata=255 )
-	output_filename = final_sic.name.replace( '.tif', '_FILLMASK.tif' ) # FINAL NAME HERE
-	with rasterio.open( output_filename, 'w', **meta ) as out:
-		out.write( fill_mask, 1 )
+# # * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+# # RUN THE MAIN ACROSS ALL OF THE DATA...
+# years = [2014, 2015]
+# for year in years:
+# 	dat_path = os.path.join( '/workspace/Shared/Tech_Projects/Sea_Ice_Atlas/project_data/hsia_updates', str(year), 'raw' )
+# 	out_path = os.path.join( '/workspace/Shared/Tech_Projects/Sea_Ice_Atlas/project_data/hsia_updates', str(year), 'prepped' )
+# 	l = glob.glob( os.path.join( dat_path, '*.bin' ) )
+# 	_ = [ main( fn, template, output_path ) for fn in l ]
+# # * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+
+
+
+
+
+
+# meta = final_sic.meta
+# meta.update( compress='lzw', dtype='uint8', nodata=255 )
+# output_filename = final_sic.name.replace( '.tif', '_FILLMASK.tif' ) # FINAL NAME HERE
+# with rasterio.open( output_filename, 'w', **meta ) as out:
+# 	out.write( fill_mask, 1 )
+
+
+
+
 
 # template_path = '/workspace/Shared/Tech_Projects/Sea_Ice_Atlas/project_data/hsia_updates/hsia_template/seaice_conc_sic_mean_pct_monthly_ak_1971_04.tif'
 # # for input_fn in glob.glob( os.path.join( input_path, '*.bin' ) ):
