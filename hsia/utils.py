@@ -1,4 +1,5 @@
 # utility functions for use in the processing from raw NSIDC data to HSIA format
+import numpy as np
 
 def bounds_to_extent( bounds ):
 	'''

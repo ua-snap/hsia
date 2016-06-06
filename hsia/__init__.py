@@ -30,7 +30,7 @@ def get_padded_shape( full_rst, template, resolution, output_filename ):
 				template.fn + ' ' + template_out_fn )
 
 	template_3413 = rasterio.open( template_out_fn )
-	new_shp_fn = padded_extent_to_shp( full_rst, template_3413, (0,0,5,0),  "EPSG:3413", output_filename )
+	new_shp_fn = utils.padded_extent_to_shp( full_rst, template_3413, (0,0,5,0),  "EPSG:3413", output_filename )
 	return new_shp_fn
 
 def drop_erroneous_ice( fn, fn_list, output_path ):
@@ -78,7 +78,6 @@ def drop_erroneous_ice( fn, fn_list, output_path ):
 	# write it out to disk:
 	# output_path = '/workspace/Shared/Tech_Projects/Sea_Ice_Atlas/project_data/update_2014/hsia_2014_update_gtiffs_dropice_v2'
 	output_filename = os.path.join( output_path, os.path.basename( cur.name ).replace( '.tif', '_dropice_v2.tif' ) )
-
 	with rasterio.open( output_filename, 'w', **meta ) as out:
 		out.write( cur_arr.astype( np.uint8 ), 1 )
 		# out.write( cur_arr2, 2 )
@@ -94,6 +93,9 @@ def main( fn, template, output_path=None ):
 
 	'''
 	import rasterio, glob, os
+	import numpy as np
+	import pandas as pd
+	import geopandas as gpd
 
 	# convert `.bin` to `.tif` in 3413
 	sic = SeaIceRaw( fn )
@@ -164,7 +166,7 @@ def main( fn, template, output_path=None ):
 	# 1 = inland lakes and inlets not covered by the NSIDC landmask, but present in the HSIA mask
 
 	# run fill with recursion
-	sic_arr = fill_mask_mismatch( sic_arr, np.copy( fill_mask ) )
+	sic_arr = utils.fill_mask_mismatch( sic_arr, np.copy( fill_mask ) )
 
 	# WRITE OUT FINAL GTIFF PREPPED FOR HSIA WITHOUT ERROR ICE REMOVED
 	meta = sic_conv.meta
@@ -217,21 +219,6 @@ def main( fn, template, output_path=None ):
 		out.write( source_arr, 2 )
 
 	return output_filename
-
-
-# # * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
-# # RUN THE MAIN ACROSS ALL OF THE DATA...
-# years = [2014, 2015]
-# for year in years:
-# 	dat_path = os.path.join( '/workspace/Shared/Tech_Projects/Sea_Ice_Atlas/project_data/hsia_updates', str(year), 'raw' )
-# 	out_path = os.path.join( '/workspace/Shared/Tech_Projects/Sea_Ice_Atlas/project_data/hsia_updates', str(year), 'prepped' )
-# 	l = glob.glob( os.path.join( dat_path, '*.bin' ) )
-# 	_ = [ main( fn, template, output_path ) for fn in l ]
-# # * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
-
-
-
-
 
 
 # meta = final_sic.meta

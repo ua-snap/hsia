@@ -1,3 +1,6 @@
+import numpy as np
+import rasterio, os, glob
+
 class SeaIceRaw( object ):
 	def __init__( self, fn ):
 		'''
