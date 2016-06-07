@@ -81,10 +81,10 @@ def drop_erroneous_ice( fn, fn_list, output_path ):
 	with rasterio.open( output_filename, 'w', **meta ) as out:
 		out.write( cur_arr.astype( np.uint8 ), 1 )
 		# out.write( cur_arr2, 2 )
-
 	return output_filename
 
-def main( fn, template, output_path=None ):
+def main( fn, template, output_path=None, \
+	hsia_path='/workspace/Shared/Tech_Projects/Sea_Ice_Atlas/project_data/HSIA_SIC_Chapman/v1_0/monthly/gtiff' ):
 	'''
 	main function for running this script with the NSIDC 0051 2014-2015 update to HSIA
 
@@ -97,17 +97,24 @@ def main( fn, template, output_path=None ):
 	import pandas as pd
 	import geopandas as gpd
 
+	# some pathing setup:
+	temp_path = os.path.join( output_path, 'temp_files' )
+	if not os.path.exists( temp_path ):
+		os.makedirs( temp_path )
+
 	# convert `.bin` to `.tif` in 3413
 	sic = SeaIceRaw( fn )
-	sic_fn = sic.to_gtiff_3413()
+	output_filename = os.path.join( temp_path, os.path.basename( fn ).replace( '.bin', '.tif' ) )
+	sic_fn = sic.to_gtiff_3413( output_filename=output_filename )
 	resolution = str( sic.get_metadata()['affine'].a ) # 25000
 
 	# return padded extent for clipping
 	pad_fn = template.fn.replace( '.tif', '_padext.shp' )
+	pad_fn = os.path.join( temp_path, os.path.basename( pad_fn ) ) # some naming-fu
 	if os.path.exists( pad_fn ):
 		os.unlink( pad_fn )
 
-	full_rst = rasterio.open( sic_fn )
+	full_rst = rasterio.open( sic_fn ) # open the converted data to .tif
 	pad_ext = get_padded_shape( full_rst, template, resolution, pad_fn )
 
 	# gdalwarp to crop to new padded extent
@@ -136,7 +143,7 @@ def main( fn, template, output_path=None ):
 
 	# read in the masks from the 2 groups
 	hsia_mask_arr = template.get_mask()
-	nsidc_mask_arr = (rasterio.open( output_filename ).read(1) == 255).astype( int )
+	nsidc_mask_arr = (rasterio.open( output_filename ).read( 1 ) == 255).astype( int )
 	
 	# now lets add in some data to the metadata layer...
 	# read in some FINALIZED data
@@ -175,11 +182,10 @@ def main( fn, template, output_path=None ):
 	with rasterio.open( output_filename, 'w', **meta ) as out:
 		out.write( sic_arr, 1 )
 
-	# drop erroneous sea ice:
+	# DROP ERRONEOUS SEA ICE -- NSIDC ERROR:
 	month = os.path.basename(output_filename).split('_')[1][4:] # HARDWIRED AND DANGEROUS STUFF HERE! BROKEN !!!!
-	# output_path = '/workspace/Shared/Tech_Projects/Sea_Ice_Atlas/project_data/hsia_updates', year 
-	fn_list = glob.glob( '/workspace/Shared/Tech_Projects/Sea_Ice_Atlas/project_data/HSIA_SIC_Chapman/v1_0/monthly/gtiff/*'+month+'.tif' )
-	# this output SHOULD be the final good-to-go output TESTS NEEDED HERE!
+	year = os.path.basename(output_filename).split('_')[1][:4] # HARDWIRED AND DANGEROUS STUFF HERE! BROKEN !!!!
+	fn_list = glob.glob( os.path.join( hsia_path, '*'+month+'.tif' ) )
 	sic_out_fn = drop_erroneous_ice( out.name, fn_list, output_path )
 
 	# BUILD OUT THE SOURCE BAND (2)
@@ -213,99 +219,10 @@ def main( fn, template, output_path=None ):
 	# WRITE OUT FINAL GTIFF PREPPED FOR HSIA WITH ERROR ICE REMOVED
 	meta = final_sic.meta
 	meta.update( compress='lzw', dtypes=['uint8', 'uint8'], dtype='uint8', count=2, nodata=255 )
+	output_filename = os.path.basename( output_path, '_'.join(['seaice_conc_sic_mean_pct_monthly_ak', year, month]) + '.tif' )
 	output_filename = final_sic.name.replace( '.tif', '_dropice.tif' ) # FINAL NAME HERE
 	with rasterio.open( output_filename, 'w', **meta ) as out:
 		out.write( final_arr, 1 )
 		out.write( source_arr, 2 )
 
 	return output_filename
-
-
-# meta = final_sic.meta
-# meta.update( compress='lzw', dtype='uint8', nodata=255 )
-# output_filename = final_sic.name.replace( '.tif', '_FILLMASK.tif' ) # FINAL NAME HERE
-# with rasterio.open( output_filename, 'w', **meta ) as out:
-# 	out.write( fill_mask, 1 )
-
-
-
-
-
-# template_path = '/workspace/Shared/Tech_Projects/Sea_Ice_Atlas/project_data/hsia_updates/hsia_template/seaice_conc_sic_mean_pct_monthly_ak_1971_04.tif'
-# # for input_fn in glob.glob( os.path.join( input_path, '*.bin' ) ):
-# def run( fn, template_fn ):
-# 	sic = SeaIceRaw( fn )
-# 	sc_fn = sic.to_gtiff()
-# 	template = TemplateRaster( template_fn )
-
-# 	# reproject the NSIDC data to EPSG:3413 using gdal
-# 	resolution = sic.get_metadata()['affine'][0] # 25000
-# 	out_fn = sic.fn.replace( '.tif', '_epsg3413.tif' )
-# 	os.system( "gdalwarp -overwrite -s_srs " + sic.crs + " -t_srs EPSG:3413 -of GTiff -r near -tr " + \
-# 				str( resolution ) + " " + str( -resolution ) + " " + \
-# 				sic.fn + ' ' + \
-# 				out_fn )
-
-# 	# procedure
-# 	# convert reprojected HSIA to 3413 extent to a shapefile with a padded extent 
-# 	#  this is for clipping the NSIDC rasters using gdalwarp 
-# 	full_rst = rasterio.open( out_fn )
-# 	proj4string = "EPSG:3413"
-# 	template_out_fn = template.fn.replace( '.tif', '_epsg3413.tif' )
-	
-# 	# project the template raster to the 3413 in the template extent
-# 	os.system( "gdalwarp -overwrite -s_srs EPSG:4326 -t_srs EPSG:3413 -of GTiff -r near -tr " + str( resolution ) + " " + str(-resolution) + " " + \
-# 				template.fn + ' ' + template_out_fn )
-
-# 	template_3413 = rasterio.open( template_out_fn )
-# 	new_shp_fn = utils.padded_extent_to_shp( full_rst, template_3413, (0,0,5,0), proj4string, output_shapefile )
-	
-# 	# now lets gdalwarp to crop to this new domain
-# 	os.system( "gdalwarp -overwrite -s_srs EPSG:3413 -t_srs EPSG:3413 -tap -cutline " + new_shp_fn + " -crop_to_cutline -tr 25000 -25000 -te "+ \
-# 				str(list(full_rst.bounds)).strip('[').strip(']').replace( ', ', ' ') + " " + full_rst.name + " " + \
-# 				full_rst.name.replace( '.tif', '_hsia.tif' ) )
-
-# 	# read the data back in and set all nodata numbers to 255
-# 	rst = rasterio.open( full_rst.name.replace( '.tif', '_hsia.tif' ) )
-# 	arr = rst.read( 1 )
-# 	meta = rst.meta
-# 	meta.update( compress='lzw', dtype=rasterio.uint8, nodata=255 )
-# 	rst.close()
-
-# 	with rasterio.open( rst.name, 'w', **meta ) as rst:
-# 		nodata_locs = np.where( arr > 250 )
-# 		nodata_vals = arr[ nodata_locs ]
-		
-# 		arr = np.divide( arr.astype( np.float32 ), 250 )
-# 		arr = (arr * 100).astype( np.uint8 )
-# 		arr[ nodata_locs ] = nodata_vals
-
-# 		arr[ arr > 250 ] = 255
-# 		rst.write_band( 1, arr )
-
-# 	# now lets project it back to the HSIA extent / resolution / reference system
-# 	output_filename = rst.name.replace( '3413', '4326' )
-# 	os.system( "gdalwarp -overwrite -s_srs EPSG:3413 -t_srs EPSG:4326 -of GTiff -ot Int16 \
-# 				-te -180.0 40.0 -119.75 80.25 -tr 0.25 -0.25 -r bilinear -srcnodata 255 -dstnodata 255 " + 
-# 				rst.name
-# 				+ " " + 
-# 				output_filename )
-
-	# # fill in a copy of the template landmask raster
-	# fn_date = os.path.basename(full_rst.name).split('_')[1]
-	# fn_date = '_'.join([fn_date[:4], fn_date[4:]])
-	# new_rst_fn = os.path.join( output_path, 'seaice_conc_sic_mean_pct_monthly_ak_'+fn_date+'_FINALIZE.tif')
-	# # copy the data to a new file
-	# processed_rst = rasterio.open( output_filename )
-	# processed_arr = processed_rst.read( 1 ).data
-	# meta = processed_rst.meta
-	# meta.update( compress='lzw', dtype=rasterio.int16, nodata=-128, crs={'init':'EPSG:4326'} )
-	# # open the landmask:
-	# with rasterio.open( hsia_data_mask ) as landmask:
-	# 	landmask_arr = landmask.read( 1 ).data.astype( rasterio.int16 )
-	# 	with rasterio.open( new_rst_fn, 'w', **meta ) as out_rst:
-	# 		landmask_arr[ landmask_arr != 0 ] = -128 # make the land -128
-	# 		ind = np.where( (processed_arr > 0) & (processed_arr < 250) & (landmask_arr != -128) )
-	# 		landmask_arr[ ind ] = processed_arr[ ind ]
-	# 		out_rst.write_band( 1, landmask_arr )
-
