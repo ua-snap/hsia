@@ -101,7 +101,7 @@ def fill_mask_mismatch( sic_arr, diff_arr, count_missing=(0,1) ):
 	ind = np.where( arr == 1 )
 	ind = zip( *ind )
 	count1, count2 = count_missing
-	print count_missing
+	# print count_missing
 	if count1 == count2:
 		# fill in the remainders with 255 and return
 		for ii in ind:
@@ -109,9 +109,9 @@ def fill_mask_mismatch( sic_arr, diff_arr, count_missing=(0,1) ):
 		return sic_arr
 	else:
 		# fill em if we can, if not, make em 255 -- we could use more neighbors but that sounds hairy
-		all_missing_neighbors = {(i,j):[ (i-1,j+0), (i+0,j-1), (i+0,j+1), (i+1,j+0) ] for i,j in ind } # rooks
-		# all_missing_neighbors = { (i,j):[ (i-1,j+0), (i+0,j-1), (i+0,j+1), (i+1,j+0), (i+1,j+1), \
-		# 							(i-1,j+1), (i-1,j-1), (i+1,j-1) ] for i,j in ind } # queens
+		# all_missing_neighbors = {(i,j):[ (i-1,j+0), (i+0,j-1), (i+0,j+1), (i+1,j+0) ] for i,j in ind } # rooks
+		all_missing_neighbors = { (i,j):[ (i-1,j+0), (i+0,j-1), (i+0,j+1), (i+1,j+0), (i+1,j+1), \
+									(i-1,j+1), (i-1,j-1), (i+1,j-1) ] for i,j in ind } # queens
 
 		for missing, neighbors_list in all_missing_neighbors.iteritems():
 			nlist = neighbors_list # just hold the name for testing
