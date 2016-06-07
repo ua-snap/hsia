@@ -10,8 +10,12 @@ template = hsia.TemplateRaster( template_path )
 years = [ 2014, 2015 ]
 for year in years:
 	base_path = '/workspace/Shared/Tech_Projects/Sea_Ice_Atlas/project_data/hsia_updates'
-	dat_path = os.path.join( base_path, str(year), 'raw' )
-	output_path = os.path.join( base_path, str(year), 'prepped' )
+	dat_path = os.path.join( base_path, 'nsidc_raw', str(year) )
+	output_path = os.path.join( base_path, 'hsia_prepped' )
+
+	if not os.path.exists( output_path ):
+		os.makedirs( output_path )
+
 	l = glob.glob( os.path.join( dat_path, '*.bin' ) )
 	_ = [ hsia.main( fn, template, output_path ) for fn in l ]
 

@@ -25,7 +25,7 @@ def get_padded_shape( full_rst, template, resolution, output_filename ):
 
 	'''	
 	template_out_fn = template.fn.replace( '.tif', '_epsg3413.tif' )
-	os.system( "gdalwarp -overwrite -s_srs EPSG:4326 -t_srs EPSG:3413 -of GTiff -r near -tr " + \
+	os.system( "gdalwarp -q -overwrite -s_srs EPSG:4326 -t_srs EPSG:3413 -of GTiff -r near -tr " + \
 				str( resolution ) + " " + str( resolution ) + " " + \
 				template.fn + ' ' + template_out_fn )
 
@@ -76,7 +76,6 @@ def drop_erroneous_ice( fn, fn_list, output_path ):
 	# cur_arr2[ (diff == -1) & (cur_arr <= 100) ] = 99 # some value and document this.
 
 	# write it out to disk:
-	# output_path = '/workspace/Shared/Tech_Projects/Sea_Ice_Atlas/project_data/update_2014/hsia_2014_update_gtiffs_dropice_v2'
 	output_filename = os.path.join( output_path, os.path.basename( cur.name ).replace( '.tif', '_dropice_v2.tif' ) )
 	with rasterio.open( output_filename, 'w', **meta ) as out:
 		out.write( cur_arr.astype( np.uint8 ), 1 )
@@ -96,6 +95,8 @@ def main( fn, template, output_path=None, \
 	import numpy as np
 	import pandas as pd
 	import geopandas as gpd
+
+	print( 'working on: %s ' % os.path.basename( fn ) )
 
 	# some pathing setup:
 	temp_path = os.path.join( output_path, 'temp_files' )
@@ -129,6 +130,10 @@ def main( fn, template, output_path=None, \
 		meta = rst.meta
 
 	meta.update( compress='lzw', dtype=rasterio.uint8, nodata=255 )
+	
+	if 'transform' in meta.keys():
+		meta.pop( 'transform' )
+	
 	with rasterio.open( rst.name, 'w', **meta ) as rst:
 		arr[ arr > 250 ] = 255
 		rst.write_band( 1, arr )
@@ -177,16 +182,20 @@ def main( fn, template, output_path=None, \
 
 	# WRITE OUT FINAL GTIFF PREPPED FOR HSIA WITHOUT ERROR ICE REMOVED
 	meta = sic_conv.meta
+	
+	if 'transform' in meta.keys():
+		meta.pop( 'transform' )
+
 	meta.update( compres_convs='lzw' )
-	output_filename = sic_conv.name.replace( '.tif', '_filled2.tif' ) # FINAL PRE-DROPICE NAME HERE
+	output_filename = sic_conv.name.replace( '.tif', '_filled2.tif' )
 	with rasterio.open( output_filename, 'w', **meta ) as out:
 		out.write( sic_arr, 1 )
 
 	# DROP ERRONEOUS SEA ICE -- NSIDC ERROR:
-	month = os.path.basename(output_filename).split('_')[1][4:] # HARDWIRED AND DANGEROUS STUFF HERE! BROKEN !!!!
-	year = os.path.basename(output_filename).split('_')[1][:4] # HARDWIRED AND DANGEROUS STUFF HERE! BROKEN !!!!
+	month = os.path.basename(output_filename).split('_')[1][4:] # HARDWIRED AND DANGEROUS STUFF HERE!!!!!
+	year = os.path.basename(output_filename).split('_')[1][:4] # HARDWIRED AND DANGEROUS STUFF HERE!!!!!
 	fn_list = glob.glob( os.path.join( hsia_path, '*'+month+'.tif' ) )
-	sic_out_fn = drop_erroneous_ice( out.name, fn_list, output_path )
+	sic_out_fn = drop_erroneous_ice( out.name, fn_list, temp_path )
 
 	# BUILD OUT THE SOURCE BAND (2)
 	# PIXEL TYPES:
@@ -219,8 +228,12 @@ def main( fn, template, output_path=None, \
 	# WRITE OUT FINAL GTIFF PREPPED FOR HSIA WITH ERROR ICE REMOVED
 	meta = final_sic.meta
 	meta.update( compress='lzw', dtypes=['uint8', 'uint8'], dtype='uint8', count=2, nodata=255 )
-	output_filename = os.path.basename( output_path, '_'.join(['seaice_conc_sic_mean_pct_monthly_ak', year, month]) + '.tif' )
-	output_filename = final_sic.name.replace( '.tif', '_dropice.tif' ) # FINAL NAME HERE
+
+	if 'transform' in meta.keys():
+		meta.pop( 'transform' )
+	
+	output_filename = os.path.join( output_path, '_'.join(['seaice_conc_sic_mean_pct_monthly_ak', year, month]) + '.tif' )
+	# output_filename = final_sic.name.replace( '.tif', '_dropice.tif' ) # FINAL NAME HERE
 	with rasterio.open( output_filename, 'w', **meta ) as out:
 		out.write( final_arr, 1 )
 		out.write( source_arr, 2 )

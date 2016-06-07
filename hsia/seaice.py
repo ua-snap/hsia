@@ -118,8 +118,13 @@ class SeaIceRaw( object ):
 		with rasterio.open( output_filename, 'w', **meta ) as out:
 			out.write( arr, 1 )
 		return output_filename
-	def to_gtiff_3413( self ):
-		fn = self._to_gtiff()
+	def to_gtiff_3413( self, output_filename=None ):
+		if output_filename:
+			# hack to get a filename arg in this function 
+			fn = self._to_gtiff( output_filename=output_filename )
+		else:
+			fn = self._to_gtiff()
+		
 		output_filename = fn.replace( '.tif', '_3413.tif')
 		os.system( 'gdalwarp -overwrite -q -multi -t_srs EPSG:3413 ' + fn + ' ' + output_filename )
 		return output_filename
