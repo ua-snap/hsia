@@ -4,6 +4,34 @@ from hsia import utils
 import rasterio, os
 import numpy as np
 
+# THIS IS A NOTE FOR THE LAST SET OF DATAS SOURCE BAND (2)
+#  7/25/2013
+#  Notes:
+# 	SOURCE IDs:
+#		1.  Danish Meteorlogical Institute
+#		2.  Japan Meteorological Agency
+#		3.  Naval Oceanographic Office (NAVOCEANO)
+#		4.  Kelly ice extent grids (based upon Danish Ice Charts)
+#		5.  Walsh and Johnson/Navy-NOAA Joint Ice Center
+#		6.  Navy-NOAA Joint Ice Center Climatology
+#		7.  Temporal extension of Kelly data (see note below)
+#		8.  Nimbus-7 SMMR Arctic Sea Ice Concentrations or DMSP SSM/I 
+#				Sea Ice Concentrations using the NASA Team Algorithm
+#		9.  AARI - Arctic and Antarctic Research Institute 
+#		10. ACSYS
+#		11.  Brian Hill - Newfoundland, Nova Scotia Data
+#		12.  Bill Dehn Collection - mostly Alaska
+#		13.  Danish Meteorological Institute (DMI)
+#		14.  Whaling ship log books
+#		15.  All conc. data climatology 1870-1977 (pre-satellite era)
+#		16.  Whaling log books open water
+#		17.  Whaling log books partial sea ice
+#		18.  Whaling log books sea ice covered
+#
+#		20.  Analog filling of spatial gaps
+#		21.  Analog filling of temporal gaps
+
+
 def get_padded_shape( full_rst, template, resolution, output_filename ):
 	'''
 	object of type Template Raster and return a padded shapefile extent to use in clipping
@@ -227,11 +255,20 @@ def main( fn, template, output_path=None, \
 
 	# WRITE OUT FINAL GTIFF PREPPED FOR HSIA WITH ERROR ICE REMOVED
 	meta = final_sic.meta
-	meta.update( compress='lzw', dtypes=['uint8', 'uint8'], dtype='uint8', count=2, nodata=255 )
+	meta.update( compress='lzw', dtypes=['uint8', 'uint8'], dtype='uint8', count=2, nodata=None )
 
 	if 'transform' in meta.keys():
 		meta.pop( 'transform' )
 	
+	# * * * * *  * * * * *  * * * * *  * * * * *  * * * * *  * * * * *  * * * * *  * * * * *  * * * * *  * * * * * 
+	# this change is for v2 where we are performing the reclassing of 128 AND 255 to ZERO...
+
+	final_arr[ (final_arr == 128) | (final_arr == 255) ] = 0
+	source_arr[ source_arr == 128 ] = 0 # NOT SURE WHAT TO DO HERE... maybe make 255 a class in the output source_arr???
+	source_arr[ source_arr == 255 ] = 25 # new class to identify the missing data...
+
+	# * * * * *  * * * * *  * * * * *  * * * * *  * * * * *  * * * * *  * * * * *  * * * * *  * * * * *  * * * * * 
+
 	output_filename = os.path.join( output_path, '_'.join(['seaice_conc_sic_mean_pct_monthly_ak', year, month]) + '.tif' )
 	# output_filename = final_sic.name.replace( '.tif', '_dropice.tif' ) # FINAL NAME HERE
 	with rasterio.open( output_filename, 'w', **meta ) as out:
