@@ -6,7 +6,7 @@ in that script and point to the `.bin` files downloaded from the NSIDC-0051.
 
 requires a NASA EarthData Login for access to the files.
 
-__**EXAMPLE FILE ACCESS FROM NEW HTTPS STORAGE AT NSIDC/NASA**__
+**__EXAMPLE FILE ACCESS FROM NEW HTTPS STORAGE AT NSIDC/NASA__**
 ```python
 # 2016 files:
 import os
