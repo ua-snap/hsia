@@ -1,12 +1,13 @@
-### HSIA
-#### prepare raw NSIDC_0051 .bin sea ice concentration (SIC) files for Historical Sea Ice Atlas
+## HSIA
+---
+### prepare raw NSIDC_0051 .bin sea ice concentration (SIC) files for Historical Sea Ice Atlas
 
 See `example.py` for the way that we run this tool. Basic use is to change the year(s) and output_path
 in that script and point to the `.bin` files downloaded from the NSIDC-0051.
 
 requires a NASA EarthData Login for access to the files.
 
-**__EXAMPLE FILE ACCESS FROM NEW HTTPS STORAGE AT NSIDC/NASA__**
+**EXAMPLE FILE ACCESS FROM NEW HTTPS STORAGE AT NSIDC/NASA**
 ```python
 # 2016 files:
 import os
