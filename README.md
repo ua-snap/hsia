@@ -7,7 +7,7 @@ in that script and point to the `.bin` files downloaded from the NSIDC-0051.
 
 requires a NASA EarthData Login for access to the files.
 
-**EXAMPLE FILE ACCESS FROM NEW HTTPS STORAGE AT NSIDC/NASA**
+_*EXAMPLE FILE ACCESS FROM NEW HTTPS STORAGE AT NSIDC/NASA*_
 ```python
 # 2016 files:
 import os
@@ -24,6 +24,6 @@ for month in ['01','02','03','04','05','06','07','08','09','10','11','12']:
 	os.system( commanda+commandb )
 ```
 
-See the `run2016_hsia.py` file for the way we ran the 2016 data.
+See the [`run2016_hsia.py`](https://github.com/ua-snap/hsia/blob/master/run2016_hsia.py) file for the way we post-processed for the 2016 data update.
 
 
