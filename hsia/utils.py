@@ -130,7 +130,7 @@ def fill_mask_mismatch( sic_arr, diff_arr, count_missing=(0,1) ):
 				arr[ missing ] = 0 # remove the flag for missing
 				sic_arr[ missing ] = new_val
 			else:
-				print 'error'
+				print( 'error' )
 
 		count_missing = ( count_missing[1], len( arr[ arr == 1 ] ) )
 		return fill_mask_mismatch( sic_arr, arr, count_missing )

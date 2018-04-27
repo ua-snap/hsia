@@ -1,4 +1,5 @@
 # utility functions for use in the processing from raw NSIDC data to HSIA format
+import numpy as np
 
 def bounds_to_extent( bounds ):
 	'''
@@ -95,11 +96,12 @@ def fill_mask_mismatch( sic_arr, diff_arr, count_missing=(0,1) ):
 
 	'''
 	height, width = sic_arr.shape
+	arr = np.copy( diff_arr ) # since we update the array, make sure its not a view...
 	# grab the index of the error locations
-	ind = np.where( diff_arr == 1 )
+	ind = np.where( arr == 1 )
 	ind = zip( *ind )
 	count1, count2 = count_missing
-	print count_missing
+	# print count_missing
 	if count1 == count2:
 		# fill in the remainders with 255 and return
 		for ii in ind:
@@ -107,9 +109,9 @@ def fill_mask_mismatch( sic_arr, diff_arr, count_missing=(0,1) ):
 		return sic_arr
 	else:
 		# fill em if we can, if not, make em 255 -- we could use more neighbors but that sounds hairy
-		all_missing_neighbors = {(i,j):[ (i-1,j+0), (i+0,j-1), (i+0,j+1), (i+1,j+0) ] for i,j in ind } # rooks
-		# all_missing_neighbors = { (i,j):[ (i-1,j+0), (i+0,j-1), (i+0,j+1), (i+1,j+0), (i+1,j+1), \
-		# 							(i-1,j+1), (i-1,j-1), (i+1,j-1) ] for i,j in ind } # queens
+		# all_missing_neighbors = {(i,j):[ (i-1,j+0), (i+0,j-1), (i+0,j+1), (i+1,j+0) ] for i,j in ind } # rooks
+		all_missing_neighbors = { (i,j):[ (i-1,j+0), (i+0,j-1), (i+0,j+1), (i+1,j+0), (i+1,j+1), \
+									(i-1,j+1), (i-1,j-1), (i+1,j-1) ] for i,j in ind } # queens
 
 		for missing, neighbors_list in all_missing_neighbors.iteritems():
 			nlist = neighbors_list # just hold the name for testing
@@ -122,13 +124,13 @@ def fill_mask_mismatch( sic_arr, diff_arr, count_missing=(0,1) ):
 			if len( vals ) == 0:
 				# print 255
 				new_val = 255
-				diff_arr[ missing ] = 1 # keep flag for missing
+				arr[ missing ] = 1 # keep flag for missing
 			elif len( vals ) > 0 :
 				new_val = int( np.mean( vals ) )
-				diff_arr[ missing ] = 0 # remove the flag for missing
+				arr[ missing ] = 0 # remove the flag for missing
 				sic_arr[ missing ] = new_val
 			else:
-				print 'error'
+				print( 'error' )
 
-		count_missing = ( count_missing[1], len( diff_arr[ diff_arr == 1 ] ) )
-		return fill_mask_mismatch( sic_arr, diff_arr, count_missing )
+		count_missing = ( count_missing[1], len( arr[ arr == 1 ] ) )
+		return fill_mask_mismatch( sic_arr, arr, count_missing )
