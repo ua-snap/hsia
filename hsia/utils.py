@@ -113,7 +113,7 @@ def fill_mask_mismatch( sic_arr, diff_arr, count_missing=(0,1) ):
 		all_missing_neighbors = { (i,j):[ (i-1,j+0), (i+0,j-1), (i+0,j+1), (i+1,j+0), (i+1,j+1), \
 									(i-1,j+1), (i-1,j-1), (i+1,j-1) ] for i,j in ind } # queens
 
-		for missing, neighbors_list in all_missing_neighbors.iteritems():
+		for missing, neighbors_list in all_missing_neighbors.items():
 			nlist = neighbors_list # just hold the name for testing
 			nlist = [ (i,j) for i,j in nlist if i >= 0 and i < height if j >= 0 and j < width ]
 			# vals = np.array( [ sic_arr[ n ].tolist() for n in nlist if n != None if sic_arr[ n ] != 128 if sic_arr[ n ] != 255 if sic_arr[ n ] != 0  ])
