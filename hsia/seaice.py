@@ -108,7 +108,7 @@ class SeaIceRaw( object ):
 		output_filename of the newly generated GeoTiff
 
 		'''
-		from rasterio.warp import RESAMPLING, reproject
+		from rasterio.warp import Resampling, reproject
 		
 		arr = self.open()
 		meta = self.get_metadata()
