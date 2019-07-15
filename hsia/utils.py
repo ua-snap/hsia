@@ -27,7 +27,7 @@ def coordinates( fn ):
 
 	# Read raster
 	with rasterio.open(fn) as r:
-		T0 = r.affine  # upper-left pixel corner affine transform
+		T0 = r.transform  # upper-left pixel corner affine transform
 		p1 = Proj(r.crs)
 		A = r.read(1)  # pixel values
 

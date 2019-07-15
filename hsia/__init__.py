@@ -135,7 +135,7 @@ def main( fn, template, output_path=None, \
 	sic = SeaIceRaw( fn )
 	output_filename = os.path.join( temp_path, os.path.basename( fn ).replace( '.bin', '.tif' ) )
 	sic_fn = sic.to_gtiff_3413( output_filename=output_filename )
-	resolution = str( sic.get_metadata()['affine'].a ) # 25000
+	resolution = str( sic.get_metadata()['transform'].a ) # 25000
 
 	# return padded extent for clipping
 	pad_fn = template.fn.replace( '.tif', '_padext.shp' )
