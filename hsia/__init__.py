@@ -159,9 +159,6 @@ def main( fn, template, output_path=None, \
 
 	meta.update( compress='lzw', dtype=rasterio.uint8, nodata=255 )
 	
-	if 'transform' in meta.keys():
-		meta.pop( 'transform' )
-	
 	with rasterio.open( rst.name, 'w', **meta ) as rst:
 		arr[ arr > 250 ] = 255
 		rst.write_band( 1, arr )
