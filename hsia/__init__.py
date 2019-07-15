@@ -74,8 +74,6 @@ def drop_erroneous_ice( fn, fn_list, output_path ):
 	# file metadata
 	meta = cur.meta
 	meta.update( compress='lzw', nodata=128, dtype='uint8' )
-	if 'transform' in meta.keys():
-		meta.pop( 'transform' )
 	
 	# stack up the timesteps rasters for the full period
 	all_files = pd.Series( fn_list )
@@ -208,8 +206,6 @@ def main( fn, template, output_path=None, \
 	# WRITE OUT FINAL GTIFF PREPPED FOR HSIA WITHOUT ERROR ICE REMOVED
 	meta = sic_conv.meta
 	
-	if 'transform' in meta.keys():
-		meta.pop( 'transform' )
 
 	meta.update( compres_convs='lzw' )
 	output_filename = sic_conv.name.replace( '.tif', '_filled2.tif' )
@@ -254,9 +250,6 @@ def main( fn, template, output_path=None, \
 	meta = final_sic.meta
 	meta.update( compress='lzw', dtypes=['uint8', 'uint8'], dtype='uint8', count=2, nodata=None )
 
-	if 'transform' in meta.keys():
-		meta.pop( 'transform' )
-	
 	# * * * * *  * * * * *  * * * * *  * * * * *  * * * * *  * * * * *  * * * * *  * * * * *  * * * * *  * * * * * 
 	# this change is for v2 where we are performing the reclassing of 128 AND 255 to ZERO...
 
