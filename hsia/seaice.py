@@ -32,7 +32,7 @@ class SeaIceRaw( object ):
 		created.  Only GeoTiff is currently supported.
 		'''
 		from affine import Affine as A
-		meta = {'affine': A.from_gdal( *self.geotransform ),
+		meta = {'transform': A.from_gdal( *self.geotransform ),
 				'count': 1,
 				'crs': self.crs,
 				'driver': u'GTiff',
