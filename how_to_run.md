@@ -38,6 +38,7 @@ python setup.py install
 
 ## download the files you want to make fit the HSIA app
 - this snippet below can be run in an ipython (or similar) interpreter or can be made a `.py` script file and run with `python <name_of_your_scriptfile>.py`
+- to get an EarthData Login [register here](https://urs.earthdata.nasa.gov/users/new) with NASA.
 
 ```python
 # 2018 files:
