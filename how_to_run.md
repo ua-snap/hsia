@@ -57,6 +57,13 @@ for month in ['01','02','03','04','05','06','07','08','09','10','11','12']:
 
 ```
 
+### UPDATE (on how to download the data):
+The above snippet can also be run at the commandline using the function named:`download_nsidc0051.py`
+```sh
+# for 2018 the command would look something like this:
+ipython download_nsidc0051.py -o /workspace/Shared/Tech_Projects/Sea_Ice_Atlas/project_data/hsia_updates/nsidc_raw/2018 -y 2018 -u <your EarthData username> -p <your EarthData password>
+```
+
 ## Then modify the example run file to fit the year you are running and the proper paths
 - this is how it was run to perform the 2018 update.  I would imagine to do the 2019 will be very mmuch the same thing with updated paths to the data and the `years` variable (updated to 2019).
 
