@@ -1,5 +1,4 @@
 ## HSIA
----
 ### prepare raw NSIDC_0051 .bin sea ice concentration (SIC) files for Historical Sea Ice Atlas
 
 ![hsia](https://github.com/ua-snap/hsia/blob/master/hsia-splash.png)
