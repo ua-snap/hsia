@@ -1,5 +1,5 @@
 # How To Run package:`hsia`
----
+
 ## ABOUT
 This package is a simple way for SNAP to access data from the NSIDC-0051 Monthly data archive [see here](https://catalog.data.gov/dataset/sea-ice-concentrations-from-nimbus-7-smmr-and-dmsp-ssm-i-ssmis-passive-microwave-data-v001/resource/88927a8a-eeb2-4510-8f08-a4b9cd6bff16), and process it to fit the needed scale, area of interest, and coordinate reference system of the [Historical Sea Ice Atlas](http://seaiceatlas.snap.uaf.edu/).
 
