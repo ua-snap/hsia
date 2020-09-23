@@ -40,7 +40,8 @@ This requires a NASA EarthData Login. To get one [register here](https://urs.ear
 - use `download_nsidc0051.py` to download the data you want for a selected year. _For 2019, you should be able to just change the year in the paths and `-y` flag below._
 ```sh
 # for 2018 the command would look something like this:
-ipython download_nsidc0051.py -o /workspace/Shared/Tech_Projects/Sea_Ice_Atlas/project_data/hsia_updates/nsidc_raw/2018 -y 2018 -u <your EarthData username> -p <your EarthData password>
+pipenv run python download_nsidc0051.py -o /workspace/Shared/Tech_Projects/Sea_Ice_Atlas/project_data/hsia_updates/nsidc_raw/2019 -y 2019 -u <your EarthData username> -p "<your EarthData password>"
+# (password in quotes to deal with special characters, e.g. parentheses)
 ```
 
 ### process the data for `hsia` ingest
