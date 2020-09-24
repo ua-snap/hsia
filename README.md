@@ -10,4 +10,5 @@
 - See `example.py` for a quick look at how to run the application. Basic use is to change the year(s) and output_path
 in that script and point to the `.bin` files downloaded from the NSIDC-0051. **requires a NASA EarthData Login for access to the files.**
 
-- See the [`run2018_hsia.py`](https://github.com/ua-snap/hsia/blob/master/run2018_hsia.py) file for the way we post-processed for the 2018 data update.
+- See the [`run2019_hsia.py`](https://github.com/ua-snap/hsia/blob/master/run2018_hsia.py) file for the way we post-processed for the 2019 data update.
+
