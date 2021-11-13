@@ -20,4 +20,3 @@ for year in years:
     _ = [ hsia.main( fn, template, output_path ) for fn in l ]
 
 # * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
-

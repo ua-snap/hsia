@@ -122,3 +122,9 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# jupyter
+*.ipynb_checkpoints
+
+# anaconda-project
+envs/
