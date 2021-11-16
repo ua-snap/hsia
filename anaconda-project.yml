@@ -92,3 +92,8 @@ env_specs:
   default:
     packages: []
     channels: []
+
+# This is a temporary fix to remove warnings 
+# about notebooks without commands
+skip_imports:
+  notebooks: true
