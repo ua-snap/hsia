@@ -1,14 +1,18 @@
-## HSIA
-#### Prepare raw NSIDC_0051 Monthly Sea Ice Concentration Grids for Ingest to the [Historical Sea Ice Atlas](http://seaiceatlas.snap.uaf.edu/)
+# Historical Sea Ice Atlas
 
-![hsia](https://github.com/ua-snap/hsia/blob/master/hsia-splash.png)
+This repository is for creating the data available in SNAP's [Historical Sea Ice Atlas (HSIA) dataset](http://ckan.snap.uaf.edu/dataset/historical-sea-ice-atlas-observed-estimates-of-sea-ice-concentration-in-alaska-waters), which contains gridded sea ice concentrations for the waters surrounding Alaska. 
 
-- The data used for this is distributed by the National Snow and Ice Data Center (NSIDC)[here](https://catalog.data.gov/dataset/sea-ice-concentrations-from-nimbus-7-smmr-and-dmsp-ssm-i-ssmis-passive-microwave-data-v001/resource/88927a8a-eeb2-4510-8f08-a4b9cd6bff16)
+In the past, this repo had previously been used for updating the data displayed in SNAP's [Historical Sea Ice Atlas webapp](https://www.snap.uaf.edu/tools/sea-ice-atlas), as the above dataset was previously the ingest data for that webapp. However, the newest version of the webapp makes use of [panarctic data](https://nsidc.org/data/g10010), so this repo is now dedicated to the "Alaska" HSIA dataset only. 
 
-- Step-by-step instructions on getting this tool up and running is located [here](https://github.com/ua-snap/hsia/blob/master/how_to_run.md) which links to the `how_to_run.md` file in the root of this repository.
+## Updating the Historical Sea Ice Atlas dataset
 
-- See `example.py` for a quick look at how to run the application. Basic use is to change the year(s) and output_path
-in that script and point to the `.bin` files downloaded from the NSIDC-0051. **requires a NASA EarthData Login for access to the files.**
+The [update_hsia.ipynb](update_hsia.ipynb) jupyter notebook contains step-by-step instructions for downloading new data from the NSIDC, running this codebase on it, and some unix commands for organizing it with previous versions on SNAP's systems. The goal of the updates is to integrate new releases of the [NSIDC-0051 dataset](https://nsidc.org/data/nsidc-0051), which occurs annually.
 
-- See the [`run2019_hsia.py`](https://github.com/ua-snap/hsia/blob/master/run2018_hsia.py) file for the way we post-processed for the 2019 data update.
+This repository has been updated to use `anaconda-project`, which can be installed via `conda` with `conda install anaconda-project`. 
 
+To run the jupyter notebook used for updating the HSIA dataset, simply run `anaconda-project run update_hsia`, and follow the instructions therein.
+
+## Contents
+
+`hsia/`: The code for processing the downloaded data to the standardized format used for the HSIA dataset. 
+`archive/`: Old code and things that might be useful to have, mostly for SNAP internal purposes.

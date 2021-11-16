@@ -24,14 +24,15 @@ description:
 # In the commands section, list your runnable scripts, notebooks, and other code.
 # Use `anaconda-project add-command` to add commands.
 #
-commands: {}
+commands:
+  update_hsia:
+    unix: jupyter lab update_hsia.ipynb
 
 #
 # In the variables section, list any environment variables your code depends on.
 # Use `anaconda-project add-variable` to add variables.
 #
-variables:
-  PROJ_LIB: $CONDA_DEFAULT_ENV/share/proj
+variables: {}
 
 #
 # In the services section, list any services that should be
