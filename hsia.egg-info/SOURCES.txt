@@ -1,9 +1,0 @@
-setup.py
-hsia/__init__.py
-hsia/seaice.py
-hsia/utils.py
-hsia.egg-info/PKG-INFO
-hsia.egg-info/SOURCES.txt
-hsia.egg-info/dependency_links.txt
-hsia.egg-info/not-zip-safe
-hsia.egg-info/top_level.txt

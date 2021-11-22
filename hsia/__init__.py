@@ -140,7 +140,7 @@ def main( fn, template, output_path=None, \
 	pad_fn = os.path.join( temp_path, os.path.basename( pad_fn ) ) # some naming-fu
 	if os.path.exists( pad_fn ):
 		os.unlink( pad_fn )
-
+    
 	full_rst = rasterio.open( sic_fn ) # open the converted data to .tif
 	pad_ext = get_padded_shape( full_rst, template, resolution, pad_fn )
 
