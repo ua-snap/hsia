@@ -12,6 +12,8 @@ This repository has been updated to use `anaconda-project`, which can be install
 
 To run the jupyter notebook used for updating the HSIA dataset, simply run `anaconda-project run update_hsia`, and follow the instructions therein.
 
+**Note** - There are existing paths hard-coded into the processing code that is imported into the notebook. In it's current state, this codebase should only be run via machines with a connection to the Poseidon server via (`/workspace/`) 
+
 ## Contents
 
 `hsia/`: The code for processing the downloaded data to the standardized format used for the HSIA dataset. 
