@@ -128,6 +128,11 @@ class SeaIceRaw( object ):
 		output_filename = fn.replace( '.tif', '_3413.tif')
 		os.system( 'gdalwarp -overwrite -q -multi -t_srs EPSG:3413 ' + fn + ' ' + output_filename )
 		return output_filename
+	def to_gtiff_3572( self, output_filename=None ):
+		fn = self._to_gtiff()
+		
+		os.system( 'gdalwarp -overwrite -q -multi -t_srs EPSG:3572 -te_srs EPSG:3572 -dstnodata 120 -te -4862550.515 -4894840.007 4870398.248 4889334.803 -tr 17075.348707767432643 -17075.348707767432643 ' + fn + ' ' + output_filename )
+		return output_filename
 
 
 class TemplateRaster( object ):
